@@ -30,14 +30,48 @@ app.post('/v1/chat', async (req, res) => {
   }
 });
 
+// app.post('/v1/images', async (req, res) => {
+//   try {
+//     const response = await axios.post(
+//       'https://api.openai.com/v1/images/generations',
+//       {
+//         model: "gpt-image-1",
+//         prompt: req.body.prompt,
+//         size: "512x512",
+//       },
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+//     res.json(response.data);
+//   } catch (err) {
+//     // console.error(err.response?.data || err);
+//     console.error("❌ IMAGE ERROR:", err.response?.data || err.message || err);
+//     res.status(500).json({ error: "Request failed" });
+//   }
+// });
+
 app.post('/v1/images', async (req, res) => {
   try {
     const response = await axios.post(
-      'https://api.openai.com/v1/images/generations',
+      'https://api.openai.com/v1/chat/completions',
       {
         model: "gpt-image-1",
-        prompt: req.body.prompt,
-        size: "512x512",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: req.body.prompt
+              }
+            ]
+          }
+        ],
+        size: "1024x1024" // ✅ Updated
       },
       {
         headers: {
@@ -46,6 +80,7 @@ app.post('/v1/images', async (req, res) => {
         }
       }
     );
+
     res.json(response.data);
   } catch (err) {
     console.error(err.response?.data || err);
